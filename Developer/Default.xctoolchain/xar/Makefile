@@ -24,6 +24,12 @@ LIBXAR_SRCS =	lib/archive.c \
 LIBXAR_OBJS = ${LIBXAR_SRCS:%.c=%.o}
 CFLAGS += -I${.CURDIR}/include -I/usr/include/libxml2 -w -D__APPLE_CPP__ \
 	  -D__LITTLE_ENDIAN__
+# macOS host: no OpenSSL headers in the SDK; use Homebrew's (both arches).
+.if "${.MAKE.OS}" == "Darwin"
+OPENSSL_PREFIX != (brew --prefix openssl@3 2>/dev/null || echo /usr/local/opt/openssl@3)
+CFLAGS += -I${OPENSSL_PREFIX}/include
+LDFLAGS += -L${OPENSSL_PREFIX}/lib
+.endif
 
 XAR_SRCS = src/xar.c
 XAR_OBJS = ${XAR_SRCS:%.c=%.o}

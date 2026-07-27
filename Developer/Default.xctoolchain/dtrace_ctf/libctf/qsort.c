@@ -173,8 +173,14 @@ loop:
 	}
 }
 
+#ifdef __APPLE__
+/* macOS libc already declares qsort_r with a different argument order
+ * (thunk before cmp). Don't redefine it on a Darwin build host — the
+ * internal local_qsort_r above is what this file actually uses. */
+#else
 void
 qsort_r(void *a, size_t n, size_t es, cmp_t *cmp, void *thunk)
 {
 	local_qsort_r(a, n, es, cmp, thunk);
 }
+#endif
