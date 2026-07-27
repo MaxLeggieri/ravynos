@@ -84,6 +84,13 @@ LDFLAGS += -L${TOOLCHAIN}/usr/lib -lelf -ldwarf -lctf -lz
 .if "${.MAKE.OS}" == "Linux"
 CFLAGS += -D__unused="" -I/usr/include/c++/11 -I/usr/include/${CpuArch}-linux-gnu/c++/11
 LDFLAGS += -L/usr/lib/llvm-15/lib -lLLVM -ldispatch
+.elif "${.MAKE.OS}" == "Darwin"
+# The tools use llvm:: Support/Demangle symbols; link the stage-1 static libs.
+# NOTE spike-quality: OBJTOP differs per subtree, so pin the llvm_host path.
+LLVM_HOST_LIB = ${ROOT_BINARY_DIR}/Users/Max/github/ravynos/Developer/Default.xctoolchain/llvm_host/lib
+LDFLAGS += ${LLVM_HOST_LIB}/libLLVMSupport.a \
+	   ${LLVM_HOST_LIB}/libLLVMDemangle.a \
+	   -L/opt/homebrew/opt/zstd/lib -lz -lzstd -lcurses
 .endif
 CXXFLAGS += -std=c++17 
 
