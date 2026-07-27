@@ -6,7 +6,13 @@ PROD_VERSION = 0.7.0
 PROD_FAMILY = Pre Alpha
 
 # Set ONE arch and ONE config
+# arm64-build branch: follow the host arch (this tree has only ever been built
+# X86_64 upstream; ARM64 is what this spike is testing).
+.if ${MACHINE} == "x86_64" || ${MACHINE} == "amd64"
 ARCH_CONFIGS = X86_64
+.else
+ARCH_CONFIGS = ARM64
+.endif
 KERNEL_CONFIGS = RELEASE
 
 ROOT_SOURCE_DIR = ${.CURDIR}
