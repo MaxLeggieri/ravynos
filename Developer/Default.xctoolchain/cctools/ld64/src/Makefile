@@ -17,7 +17,7 @@ FLAGS += -D__DARWIN_UNIX03 -D_DARWIN_C_SOURCE -Wno-\#warnings \
 	 -I${ROOT_BINARY_DIR}${ROOT_SOURCE_DIR}/Developer/Default.xctoolchain \
 	 -I${ROOT_SOURCE_DIR}/Kernel/xnu/libkern
 
-LDFLAGS += -L${TOOLCHAIN}/usr/lib -ltapi -lxar -lstuff \
+LDFLAGS += -L${TOOLCHAIN}/usr/lib -ltapi -lxar -lstuff ${XAR_CRYPTO_LIBS} \
 	   '-Wl,${RPATH_ORIGIN}/../lib'
 
 .if "${.MAKE.OS}" == "Linux"
@@ -102,8 +102,12 @@ TARGET_DIRS = ${.OBJDIR}/ld/parsers ${.OBJDIR}/ld/code-sign-blobs \
 	      ${.OBJDIR}/ld/passes/stubs
 .if "${.MAKE.OS}" == "Darwin"
 SHLIB_EXT =	dylib
+# libxar.a uses OpenSSL EVP_*; not in the macOS SDK — link Homebrew's.
+OPENSSL_PREFIX != (brew --prefix openssl@3 2>/dev/null || echo /usr/local/opt/openssl@3)
+XAR_CRYPTO_LIBS =	-L${OPENSSL_PREFIX}/lib -lcrypto
 .else
 SHLIB_EXT =	so
+XAR_CRYPTO_LIBS =	-lcrypto
 .endif
 DEPENDS = ${TARGET_DIRS} ${TOOLCHAIN}/usr/lib/libxar.a \
 	  ${.OBJDIR}/../../../llvm_host/lib/libtapi.${SHLIB_EXT}
