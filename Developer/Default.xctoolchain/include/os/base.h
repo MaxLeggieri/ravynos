@@ -316,4 +316,28 @@ typedef void (*os_function_t)(void *_Nullable);
 typedef void (^os_block_t)(void);
 #endif
 
+
+/* Modern macOS SDK headers (os/workgroup*.h etc.) use -fbounds-safety
+ * annotation macros this older base.h predates. No-op them so this header
+ * can coexist with a current-Xcode SDK on a Darwin build host. */
+#ifndef OS_ASSUME_PTR_ABI_SINGLE_BEGIN
+#define OS_ASSUME_PTR_ABI_SINGLE_BEGIN
+#define OS_ASSUME_PTR_ABI_SINGLE_END
+#endif
+#ifndef OS_UNSAFE_INDEXABLE
+#define OS_UNSAFE_INDEXABLE
+#endif
+#ifndef OS_HEADER_INDEXABLE
+#define OS_HEADER_INDEXABLE
+#endif
+#ifndef OS_COUNTED_BY
+#define OS_COUNTED_BY(N)
+#endif
+#ifndef OS_SIZED_BY
+#define OS_SIZED_BY(N)
+#endif
+#ifndef OS_NULL_TERMINATED
+#define OS_NULL_TERMINATED
+#endif
+
 #endif // __OS_BASE__
