@@ -11,6 +11,18 @@
 #define reallocf realloc
 #endif
 
+/* The host-tool build undefines __APPLE__/BSD feature macros, so reallocf
+ * (a BSD extension) is not declared even on a Darwin host. */
+#ifndef reallocf
+#include <stdlib.h>
+static inline void *ld64_reallocf(void *p, size_t n) {
+    void *q = realloc(p, n);
+    if (q == NULL) free(p);
+    return q;
+}
+#define reallocf ld64_reallocf
+#endif
+
 #include "ResponseFiles.h"
 
 extern void throwf (const char* format, ...) __attribute__ ((noreturn,format(printf, 1, 2)));

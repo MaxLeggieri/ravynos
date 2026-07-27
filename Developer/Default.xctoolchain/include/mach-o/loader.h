@@ -1259,6 +1259,7 @@ struct build_tool_version {
 };
 
 /* Known values for the platform field above. */
+#define PLATFORM_UNKNOWN 0
 #define PLATFORM_MACOS 1
 #define PLATFORM_IOS 2
 #define PLATFORM_TVOS 3

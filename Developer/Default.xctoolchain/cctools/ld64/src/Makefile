@@ -100,8 +100,13 @@ PASSES_SRCS =	ld/passes/branch_island.cpp \
 PASSES_OBJS = ${PASSES_SRCS:%.cpp=%.o}
 TARGET_DIRS = ${.OBJDIR}/ld/parsers ${.OBJDIR}/ld/code-sign-blobs \
 	      ${.OBJDIR}/ld/passes/stubs
+.if "${.MAKE.OS}" == "Darwin"
+SHLIB_EXT =	dylib
+.else
+SHLIB_EXT =	so
+.endif
 DEPENDS = ${TARGET_DIRS} ${TOOLCHAIN}/usr/lib/libxar.a \
-	  ${.OBJDIR}/../../../llvm_host/lib/libtapi.so
+	  ${.OBJDIR}/../../../llvm_host/lib/libtapi.${SHLIB_EXT}
 
 all: ${TOOLS}/ld64
 

@@ -1,6 +1,8 @@
-# Mach-O prefixes every symbol with an underscore, so the ELF-style export
-# list resolves to nothing on a Darwin host (every entry comes back as an
-# <initial-undefines> link error). Use the underscored list there.
+# The export list carries BOTH C++ ABI manglings: libc++ (NSt3__1...) and old
+# libstdc++ (Ss...). A Darwin/libc++ host never defines the libstdc++ ones, and
+# -exported_symbols_list turns each missing entry into an <initial-undefines>
+# link error, so use a filtered list there. (cmake adds the Mach-O leading
+# underscore itself - do not pre-underscore these names.)
 if(APPLE)
   set(LLVM_EXPORTED_SYMBOL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/libtapi.exports.darwin)
 else()
