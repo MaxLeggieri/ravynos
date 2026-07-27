@@ -6,6 +6,13 @@ all: ${TOOLS}/clang
 .if "${.MAKE.OS}" != "Darwin"
 CFLAGS = -UHAVE_MACH_MACH_H -UAPPLE -U__APPLE__ -UHAVE_DECL_ARC4RANDOM
 CXXFLAGS = ${CFLAGS} -U_GLIBCXX_USE_CXX11_ABI -D_GLIBCXX_USE_CXX11_ABI=0
+.else
+# Darwin host: stage-1 LLVM is a HOST tool and must use the macOS SDK's
+# headers. The ravynOS target include dir shadows <mach/*>, and its
+# mach/task.h is MIG-generated later in the build, so LLVM fails on
+# undeclared task_{get,set}_exception_ports. Drop it for this build only.
+CFLAGS := ${CFLAGS:N-I*Default.xctoolchain/include}
+CXXFLAGS := ${CXXFLAGS:N-I*Default.xctoolchain/include}
 .endif
 
 ${TOOLCHAIN}/usr/lib/libLLVM.a ${TOOLCHAIN}/usr/lib/libtapi.so \

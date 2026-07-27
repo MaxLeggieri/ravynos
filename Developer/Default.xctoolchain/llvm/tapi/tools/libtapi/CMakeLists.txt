@@ -1,4 +1,11 @@
-set(LLVM_EXPORTED_SYMBOL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/libtapi.exports)
+# Mach-O prefixes every symbol with an underscore, so the ELF-style export
+# list resolves to nothing on a Darwin host (every entry comes back as an
+# <initial-undefines> link error). Use the underscored list there.
+if(APPLE)
+  set(LLVM_EXPORTED_SYMBOL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/libtapi.exports.darwin)
+else()
+  set(LLVM_EXPORTED_SYMBOL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/libtapi.exports)
+endif()
 set(LLVM_LINK_COMPONENTS
   Support
   )
