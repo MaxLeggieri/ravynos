@@ -104,10 +104,10 @@ TARGET_DIRS = ${.OBJDIR}/ld/parsers ${.OBJDIR}/ld/code-sign-blobs \
 SHLIB_EXT =	dylib
 # libxar.a uses OpenSSL EVP_*; not in the macOS SDK — link Homebrew's.
 OPENSSL_PREFIX != (brew --prefix openssl@3 2>/dev/null || echo /usr/local/opt/openssl@3)
-XAR_CRYPTO_LIBS =	-L${OPENSSL_PREFIX}/lib -lcrypto
+XAR_CRYPTO_LIBS =	-L${OPENSSL_PREFIX}/lib -lcrypto -lz -lxml2
 .else
 SHLIB_EXT =	so
-XAR_CRYPTO_LIBS =	-lcrypto
+XAR_CRYPTO_LIBS =	-lcrypto -lz -lxml2
 .endif
 DEPENDS = ${TARGET_DIRS} ${TOOLCHAIN}/usr/lib/libxar.a \
 	  ${.OBJDIR}/../../../llvm_host/lib/libtapi.${SHLIB_EXT}
