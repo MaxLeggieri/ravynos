@@ -33,8 +33,31 @@ which needs an upstream-shaped fix, not a patch here.
 
 Note `mach/arm/task.h` exists upstream, so some arm groundwork is present.
 
+## Result: toolchain builds; XNU kernel is the wall
+
+**The full Apple-style toolchain builds for arm64** from this tree on an Apple
+Silicon macOS host: clang, lld, tapi, the cctools suite, `ld64`, `iig`, and the
+CTF tools. ~23 fixes (below), almost all macOS-host portability; only
+`TargetConditionals.h` was a genuine arm64 gap.
+
+**Hard wall: the XNU kernel.** `world` then enters `Kernel`, and XNU's arm64
+build supports only specific Apple SoCs — `SUPPORTED_ARM64_MACHINE_CONFIGS =
+T7000 T7001 S8000 S8001 T8010 T8011 BCM2837` (A8/A9/A10 iPhone chips + Raspberry
+Pi 3). There is **no generic-arm64 / QEMU-virt board**, and the build drives
+`EMBEDDED_DEVICE_MAP` (Apple's proprietary embedded-device database) to resolve a
+board to its arch. So building this kernel targets real Apple/embedded hardware,
+not a VM — it cannot produce a QEMU-bootable arm64 kernel from this tree.
+
+**Strategic conclusion (for the Ellos effort that motivated this):** irrelevant.
+Ellos already has a working arm64 kernel (FreeBSD/NextBSD). The only part of
+ravynOS worth harvesting is its *userland* — the Cocoa/AppKit frameworks and the
+X11-free WindowServer — but those sit behind the XNU kernel-header dependency in
+`world` (Libraries pull kernel headers from the SDK). Extracting them for arm64
+would mean decoupling the framework build from XNU's SDK population — a separate,
+larger effort, and a Mach-O-vs-ELF integration question on top.
+
 ## Verdict
 
-arm64 is not blocked by anything fundamental *so far*, but it is a long tail of
-host-portability work before any bootable artifact exists. Nothing here has been
-run; this is a build-system spike only.
+arm64 has no *toolchain* blocker — it builds. The blocker is the XNU kernel,
+which on arm64 is Apple's embedded build system with no generic/VM target. That
+is a design wall, not a bug to patch. Nothing was booted; this is a build spike.
